@@ -1,25 +1,19 @@
 import {Router} from "express";
-import prismaClient from "../database";
+import {UrlsService} from "./urls.service";
 
 const router = Router();
 
-type Entity = {
-    id: number;
-    url: URL;
-}
-
 router.get("/:id", async (req, res) => {
-    const id = Number(req.params.id);
+   if(!req.params.id || Number.isNaN(req.params.id)) {
+       res.sendStatus(400);
+       return;
+   }
 
-    const url = await prismaClient.urls.findFirst({
-        where: {
-            id
-        }
-    })
+   const url = await UrlsService.findUrl(parseInt(req.params.id));
 
     if(!url) {
-        res.sendStatus(404);
-        return;
+         res.sendStatus(404);
+         return;
     }
 
     res.json(url);
@@ -31,30 +25,8 @@ router.post("/", async (req, res) => {
         return;
     }
 
-    let url = await prismaClient.urls.findFirst({
-        where: {
-            url: req.body.url
-        }
-    })
-
-    if(url) {
-        res.json({
-            message: "URL already stored",
-            url
-        })
-        return;
-    }
-
-     url = await prismaClient.urls.create({
-        data: {
-            url: req.body.url,
-        }
-    })
-
-    res.json({
-        message: "URL stored",
-        url
-    })
+    const url = await UrlsService.createUrl(req.body.url);
+    res.json(url);
 })
 
 export default router;
