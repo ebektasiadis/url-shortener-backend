@@ -1,6 +1,5 @@
 import express from "express";
-import { PrismaClient } from '@prisma/client'
-import urlController from "./controllers/url.controller";
+import urlController from "./urls/urls.controller";
 
 const app = express();
 
