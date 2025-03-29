@@ -1,32 +1,47 @@
 import {Router} from "express";
-import {UrlsService} from "./urls.service";
+import {IUrlsService} from "./urls.models";
 
-const router = Router();
+export class UrlsController {
+    private readonly $router: Router;
 
-router.get("/:id", async (req, res) => {
-   if(!req.params.id || Number.isNaN(req.params.id)) {
-       res.sendStatus(400);
-       return;
-   }
-
-   const url = await UrlsService.findUrl(parseInt(req.params.id));
-
-    if(!url) {
-         res.sendStatus(404);
-         return;
+    constructor(
+        private readonly $urlsService: IUrlsService
+    ) {
+        this.$router = Router();
     }
 
-    res.json(url);
-})
+    addHandlers(): this {
+        this.$router.get("/:id", async (req, res) => {
+            if(!req.params.id || Number.isNaN(req.params.id)) {
+                res.sendStatus(400);
+                return;
+            }
 
-router.post("/", async (req, res) => {
-    if(!req.body.url || !URL.canParse(req.body.url)) {
-        res.sendStatus(400);
-        return;
+            const url = await this.$urlsService.findUrl(parseInt(req.params.id));
+
+            if(!url) {
+                res.sendStatus(404);
+                return;
+            }
+
+            res.json(url);
+        })
+
+        this.$router.post("/", async (req, res) => {
+            if(!req.body.url || !URL.canParse(req.body.url)) {
+                res.sendStatus(400);
+                return;
+            }
+
+            const url = await this.$urlsService.createUrl(req.body.url);
+            res.json(url);
+        })
+
+        return this;
     }
 
-    const url = await UrlsService.createUrl(req.body.url);
-    res.json(url);
-})
-
-export default router;
+    buildRouter(): Router {
+        return this
+            .$router;
+    }
+}

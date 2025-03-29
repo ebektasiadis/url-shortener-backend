@@ -1,12 +1,18 @@
 import {Urls} from "@prisma/client";
+import {IUrlsRepository, IUrlsService} from "./urls.models";
 import {UrlsRepository} from "./urls.repository";
 
-export abstract class UrlsService {
-    public static createUrl(url: string): Promise<Urls> {
-        return UrlsRepository.createUrl(url);
+export class UrlsService implements IUrlsService {
+    constructor(
+        private readonly $urlRepository: IUrlsRepository
+    ) {}
+
+
+    public createUrl(url: string): Promise<Urls> {
+        return this.$urlRepository.createUrl(url);
     }
 
-    public static findUrl(id: number): Promise<Urls | null> {
-        return UrlsRepository.findUrl(id);
+    public findUrl(id: number): Promise<Urls | null> {
+        return this.$urlRepository.findUrl(id);
     }
 }

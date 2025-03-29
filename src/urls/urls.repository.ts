@@ -1,9 +1,10 @@
 import { Urls } from "@prisma/client"
 import prismaClient from "../database";
+import {IUrlsRepository} from "./urls.models";
 
 
-export abstract class UrlsRepository {
-    static async createUrl(url: string): Promise<Urls> {
+export class UrlsRepository implements IUrlsRepository {
+    async createUrl(url: string): Promise<Urls> {
         const response = await prismaClient.urls.findFirst({
             where: {
                 url
@@ -21,7 +22,7 @@ export abstract class UrlsRepository {
         })
     }
 
-    static findUrl(id: number): Promise<Urls | null> {
+    findUrl(id: number): Promise<Urls | null> {
         return prismaClient.urls.findFirst({
             where: {
                 id
